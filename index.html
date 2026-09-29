@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de MCM y MCD | Paso a Paso</title>
+    <meta name="description" content="Calculadora interactiva online para obtener el Mínimo Común Múltiplo (MCM) y el Máximo Común Divisor (MCD) con explicaciones y descomposición en factores primos paso a paso.">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --accent: #06b6d4;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-btn {
+            background: none;
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        main {
+            flex: 1;
+            max-width: 900px;
+            width: 100%;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .hero p {
+            color: var(--text-muted);
+        }
+
+        .calculator-card {
+            background-color: var(--bg-card);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1.1rem;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .result-box {
+            background-color: var(--bg-body);
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .result-box h3 {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .result-val {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .step-section {
+            margin-top: 2rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+        }
+
+        .step-section h3 {
+            margin-bottom: 1rem;
+        }
+
+        .factor-card {
+            background: var(--bg-body);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid var(--accent);
+        }
+
+        .info-article {
+            background-color: var(--bg-card);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .info-article h2 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .info-article p, .info-article ul {
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+        }
+
+        .info-article ul {
+            padding-left: 1.5rem;
+        }
+
+        footer {
+            background-color: var(--bg-card);
+            border-top: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background-color: var(--bg-card);
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: var(--text-main);
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 1rem;
+            }
+            main {
+                margin: 1rem auto;
+            }
+            .hero h1 {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <span>&#128208;</span> MCMD Calculator
+        </div>
+        <button class="theme-btn" id="themeToggle">Modo Oscuro</button>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Calculadora de MCM y MCD</h1>
+            <p>Obtén el Mínimo Común Múltiplo y el Máximo Común Divisor paso a paso en segundos.</p>
+        </section>
+
+        <section class="calculator-card">
+            <div class="input-group">
+                <label for="numbersInput">Introduce los números separados por comas o espacios:</label>
+                <input type="text" id="numbersInput" placeholder="Ejemplo: 12, 18, 24" value="12, 18, 24">
+            </div>
+
+            <div class="btn-container">
+                <button class="btn" onclick="calculate()">Calcular Ahora</button>
+            </div>
+
+            <div class="results-grid" id="resultsGrid" style="display: none;">
+                <div class="result-box">
+                    <h3>Mínimo Común Múltiplo (MCM)</h3>
+                    <div class="result-val" id="mcmVal">-</div>
+                </div>
+                <div class="result-box">
+                    <h3>Máximo Común Divisor (MCD)</h3>
+                    <div class="result-val" id="mcdVal">-</div>
+                </div>
+            </div>
+
+            <div class="step-section" id="stepsSection" style="display: none;">
+                <h3>Descomposición en Factores Primos</h3>
+                <div id="factorsContainer"></div>
+                <h3 style="margin-top: 1.5rem;">Explicación del Proceso</h3>
+                <div id="explanationContainer" class="factor-card"></div>
+            </div>
+        </section>
+
+        <article class="info-article">
+            <h2>¿Qué es el Mínimo Común Múltiplo (MCM)?</h2>
+            <p>El <strong>Mínimo Común Múltiplo (MCM)</strong> de dos o más números es el número positivo más pequeño que es múltiplo de todos ellos. Es ampliamente utilizado en matemáticas para la suma y resta de fracciones con distinto denominador.</p>
+
+            <h2>¿Qué es el Máximo Común Divisor (MCD)?</h2>
+            <p>El <strong>Máximo Común Divisor (MCD)</strong> es el número entero más grande que divide exactamente a dos o más números sin dejar residuo. Se utiliza principalmente para simplificar fracciones y descomponer números en problemas matemáticos cotidianos.</p>
+
+            <h2>¿Cómo se calculan el MCM y el MCD?</h2>
+            <ul>
+                <li><strong>MCM:</strong> Se descomponen los números en factores primos y se toman los factores comunes y no comunes elevados al mayor exponente.</li>
+                <li><strong>MCD:</strong> Se toman únicamente los factores primos comunes a todos los números elevados al menor exponente.</li>
+            </ul>
+        </article>
+    </main>
+
+    <footer>
+        <div class="footer-links">
+            <a onclick="openModal('privacyModal')">Política de Privacidad</a>
+            <a onclick="openModal('termsModal')">Términos de Uso</a>
+            <a onclick="openModal('contactModal')">Contacto</a>
+        </div>
+        <p>&copy; 2026 MCMD Calculator - Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- Modales Legales -->
+    <div class="modal" id="privacyModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('privacyModal')">&times;</button>
+            <h2>Política de Privacidad</h2>
+            <p style="margin-top:1rem;">Esta web respeta su privacidad. No recopilamos ni almacenamos ningún tipo de información personal de los usuarios. Los cálculos matemáticos se ejecutan directamente en su navegador web.</p>
+            <p style="margin-top:1rem;">Podemos utilizar servicios de terceros como Google AdSense para mostrar anuncios, los cuales pueden emplear cookies para mostrar publicidad adaptada a sus preferencias de navegación.</p>
+        </div>
+    </div>
+
+    <div class="modal" id="termsModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('termsModal')">&times;</button>
+            <h2>Términos de Uso</h2>
+            <p style="margin-top:1rem;">Esta herramienta educativa se ofrece de forma completamente gratuita con fines informativos. Aunque realizamos todos los esfuerzos para garantizar la precisión de los resultados, no nos hacemos responsables de posibles errores en los cálculos.</p>
+        </div>
+    </div>
+
+    <div class="modal" id="contactModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('contactModal')">&times;</button>
+            <h2>Contacto</h2>
+            <p style="margin-top:1rem;">Si tienes sugerencias, comentarios o deseas reportar algún problema con la herramienta, puedes contactarnos a través del correo electrónico: <strong>soporte@tusitio.com</strong>.</p>
+        </div>
+    </div>
+
+    <script>
+        // Tema Oscuro / Claro
+        const themeToggleBtn = document.getElementById('themeToggle');
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = document.body.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                document.body.removeAttribute('data-theme');
+                themeToggleBtn.innerText = 'Modo Oscuro';
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+                themeToggleBtn.innerText = 'Modo Claro';
+            }
+        });
+
+        // Funciones Matemáticas
+        function getPrimeFactors(num) {
+            let factors = {};
+            let divisor = 2;
+            let current = num;
+            while (current >= 2) {
+                if (current % divisor === 0) {
+                    factors[divisor] = (factors[divisor] || 0) + 1;
+                    current = current / divisor;
+                } else {
+                    divisor++;
+                }
+            }
+            return factors;
+        }
+
+        function gcdTwo(a, b) {
+            return b === 0 ? a : gcdTwo(b, a % b);
+        }
+
+        function lcmTwo(a, b) {
+            return (a * b) / gcdTwo(a, b);
+        }
+
+        function calculate() {
+            const input = document.getElementById('numbersInput').value;
+            const nums = input.split(/[\s,]+/).map(n => parseInt(n.trim())).filter(n => !isNaN(n) && n > 0);
+
+            if (nums.length < 2) {
+                alert('Por favor, ingresa al menos 2 números válidos mayores a 0.');
+                return;
+            }
+
+            // Calcular MCM y MCD
+            let overallMCD = nums[0];
+            let overallMCM = nums[0];
+
+            for (let i = 1; i < nums.length; i++) {
+                overallMCD = gcdTwo(overallMCD, nums[i]);
+                overallMCM = lcmTwo(overallMCM, nums[i]);
+            }
+
+            // Mostrar Resultados
+            document.getElementById('mcmVal').innerText = overallMCM;
+            document.getElementById('mcdVal').innerText = overallMCD;
+            document.getElementById('resultsGrid').style.display = 'grid';
+
+            // Descomposición en factores
+            const factorsContainer = document.getElementById('factorsContainer');
+            factorsContainer.innerHTML = '';
+            let allFactors = {};
+
+            nums.forEach(n => {
+                const factors = getPrimeFactors(n);
+                allFactors[n] = factors;
+                let factorStr = Object.entries(factors).map(([p, exp]) => `${p}<sup>${exp}</sup>`).join(' × ') || '1';
+                
+                let div = document.createElement('div');
+                div.className = 'factor-card';
+                div.innerHTML = `<strong>${n}</strong> = ${factorStr}`;
+                factorsContainer.appendChild(div);
+            });
+
+            // Explicación
+            document.getElementById('explanationContainer').innerHTML = `
+                <p><strong>Para el MCM (${overallMCM}):</strong> Tomamos todos los factores primos (comunes y no comunes) con su mayor exponente y los multiplicamos.</p>
+                <p style="margin-top:0.5rem;"><strong>Para el MCD (${overallCD || overallMCD}):</strong> Tomamos únicamente los factores primos comunes a todos los números con su menor exponente y los multiplicamos.</p>
+            `;
+
+            document.getElementById('stepsSection').style.display = 'block';
+        }
+
+        // Modales Legales
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Ejecutar cálculo inicial
+        calculate();
+    </script>
+</body>
+</html>
